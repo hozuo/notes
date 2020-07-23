@@ -39,3 +39,107 @@ hikari:
 ## java.lang.IllegalStateException: dbType not support : null, url null
 
 https://blog.csdn.net/LT_Future/article/details/103002553
+
+## 连接数据库的docker命令行
+
+```shell
+docker run -it --network dockernet --rm mariadb mysql -hsome-mariadb -uexample-user -p
+```
+
+使用指令开启一个命令行连接数据库
+
+dockernet指连接的网络
+
+mariadb mysql固定不变
+
+some-mariadb指要连接的原始数据库docker名
+
+example-user用户名
+
+-p后面填密码
+
+## 启动mariadb容器
+
+
+
+```shell
+docker run --name xdw-database-mariadb --network dockernet -p 3306:3306 -v "/usr/local/src/mysql/datadir:/var/lib/mysql" -v "/usr/local/src/mysql/backup:/usr/local/src/mysql/backup" -e MYSQL_ROOT_PASSWORD=xdwDatabaseRootAdminHozuoPassword980305 -e MYSQL_DATABASE=xdw-manager -d mariadb --character-set-server=utf8mb4
+```
+
+
+
+```shell
+docker exec -i xdw-database-mariadb sh -c 'exec mysql -uroot -pxdwDatabaseRootAdminHozuoPassword980305' < /usr/local/src/xdwManagerDatabaseBackup20200715.sql
+```
+
+## 数据库备份
+
+```
+mysqldump -h 远程服务器IP或域名 -u 远端数据库账号 -p'远端数据库密码' --default-character-set=utf8 数据库名字 > /tmp/database_db.sql
+```
+
+```
+mysqldump -h 172.19.0.11 -u root -p'root' --default-character-set=utf8 xdwManager > /usr/local/src/database_db.sql
+```
+
+```
+mysqldump -h 10.0.1.225 -u root -p'SfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk' xdwManager > /usr/local/src/backup/xdwBak_guest_20200718_092707.sql
+```
+
+ip填服务的虚拟ip（10.0.1.218），或者容器的虚拟IP（10.0.1.225），容器ip和my-multihost-network同一网段，不能填ingress网段的ip
+
+容器IP会改变，服务IP不会
+
+```
+mysqldump -h 10.0.0.109 -u root -p'SfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk' xdwManager > /usr/local/src/backup/xdwBak_guest_20200718_092707.sql
+```
+
+
+
+创建备份脚本（放在/usr/local/src/mysql/cmd/backup.sh）
+
+$1:数据库ip
+
+$2:操作用户，自动填auto
+
+$3:创建时间，手动由java服务器提供，自动由当前操作系统提供
+
+```shell
+#!/bin/bash
+
+DATE=$(date "+%Y%m%d_%H%M%S")
+
+mysqldump -h $1 -u root -p'SfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk' xdwManager > /usr/local/src/mysql/backup/xdwBak_$2_$DATE.sql
+```
+
+执行脚本
+
+```shell
+sh /usr/local/src/cmd 10.0.1.218 admin 
+```
+
+## 启动mariadb服务
+
+```shell
+docker service create -p 3306:3306 --mount source=xdw-mysql-data,target=/var/lib/mysql --mount source=xdw-mysql-backup,target=/usr/local/src/mysql --replicas 1 --name mysql-service --network my-multihost-network -e MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql-password --secret mysql-password mariadb
+```
+
+## 还原数据
+
+```shell
+docker exec -i 283 sh -c 'exec mysql -uroot -p"$mysql-password"' < /usr/local/src/mysql/backup
+/xdwManagerBackup2020-07-16_16_51_32.sql
+```
+
+**远程还原**
+
+restore.sh(/usr/local/src/mysql/cmd/restore.sh)
+
+```shell
+mysql -h 10.0.1.218 -uroot -pSfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk -DxdwManager< /usr/local/src/mysql/backup/xdwBak_shell_20200718_154733.sql
+```
+
+```
+mysql -h $1 -uroot -pSfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk -DxdwManager< /usr/local/src/mysql/backup/$2
+```
+
