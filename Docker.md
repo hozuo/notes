@@ -65,7 +65,7 @@ sudo docker run hello-world
 sudo systemctl enable docker
 ```
 
-## 镜像加速
+## 镜像加速（未使用）
 
 由于国内网络问题，需要配置加速器来加速。修改配置文件 `/etc/docker/daemon.json`
 
@@ -96,6 +96,25 @@ sudo systemctl restart docker
 
 ```shell
 docker info
+```
+
+## 阿里云容器镜像加速
+
+### 配置镜像加速器
+
+针对Docker客户端版本大于 1.10.0 的用户
+
+您可以通过修改daemon配置文件/etc/docker/daemon.json来使用加速器
+
+```
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF' {
+"registry-mirrors": ["https://0gz3fong.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
 ```
 
 ## 安装CentOS7镜像
@@ -544,5 +563,22 @@ docker service create --mount source=xdw-java8-data,target=/usr/local/src/jar --
 
 ```shell
 docker stack deploy --compose-file docker-compose.yml xdw-swamp
+```
+
+## 错误无权限
+
+```
+[hozuo@localhost ~]$ docker images
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+```
+
+提示无权操作,通过将用户添加到docker用户组可以将sudo去掉，命令如下
+
+```
+[hozuo@localhost ~]$ sudo groupadd docker #添加docker用户组
+groupadd: group 'docker' already exists
+[hozuo@localhost ~]$ sudo gpasswd -a $USER docker #将登陆用户加入到docker用户组中
+Adding user hozuo to group docker
+[hozuo@localhost ~]$ newgrp docker #更新用户组
 ```
 

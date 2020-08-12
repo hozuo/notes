@@ -102,3 +102,7 @@ public class WebConfigurer implements WebMvcConfigurer {
     }
 }
 ```
+
+## 拦截器会执行两次
+
+如果将拦截器的拦截路径配置为"/*"，访问路径是""的话，拦截器会重复执行两次，第一次不会进入chain.doFilter(request, response);，而访问路径是其他执行一次，拦截器路径配置为"/**"也是一次，原因不清楚

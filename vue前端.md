@@ -56,3 +56,42 @@ data() {
 backgroundImage: 'url(' + require('../../assets/psc.jpg') + ')',
 ```
 
+## 新建项目
+
+`vue init webpack`
+
+## 前端axios获取请求头
+
+需要后端配置Access-Control-Expose-Headers
+
+```
+Access-Control-Expose-Headers
+```
+
+```
+Access-Control-Expose-Headers
+```
+
+```
+Access-Control-Expose-Headers
+```
+
+```java
+httpResponse.setHeader("Access-Control-Expose-Headers", "_xdw_token_1, _xdw_token");
+```
+
+### 报http://localhost:8080/[object%20Promise]
+
+img的src标签内容使用的函数使用async就会报这个错误，去掉async可以解决
+
+## el-table表头无法对齐
+
+添加全局样式
+
+.el-table th {
+display: table-cell !important;
+}
+
+## console.log()输出彩色
+
+console.log('%c [request] %o', 'color:blue', config)
