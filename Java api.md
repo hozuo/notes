@@ -12,3 +12,17 @@ POJO 是 DO / DTO / BO / VO 的统称.
 - AO (Application Object) :应用对象,在 Web 层与 Service 层之间抽象的复用对象模型,极为贴近展示层,复用度不高。
 - VO(View Object) :显示层对象,通常是 Web 向模板渲染引擎层传输的对象。
 
+## 时间转换
+
+一种ISO格式
+
+```
+yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+```
+
+
+
+```
+@DateTimeFormat(iso = DATE_TIME)
+private Date timeLimit;
+```

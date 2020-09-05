@@ -143,3 +143,25 @@ mysql -h 10.0.1.218 -uroot -pSfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5D
 mysql -h $1 -uroot -pSfSPN8ujTG97ctCQtF0GTyIeMil4oHbeANviZVU2SXLnsCWsT5DHcBxjRyH6Isk -DxdwManager< /usr/local/src/mysql/backup/$2
 ```
 
+## 删除数据库中重复数据
+
+```sql
+#删除cdk_code相同的数据，仅保留create_time最新的一条
+DELETE FROM `xdw_cdk` WHERE cdk_id NOT IN (
+    SELECT cdk_id FROM `xdw_cdk` WHERE create_time IN (
+        SELECT MAX(create_time) FROM `xdw_cdk` GROUP BY cdk_code));
+        
+#如果数据的cdk_cdoe和create_time相等将无法删除干净，删除这些重复的数据并保留id最大的一条
+DELETE FROM `xdw_cdk` WHERE cdk_id NOT IN (
+    SELECT cdk_id FROM `xdw_cdk` WHERE cdk_id IN (
+        SELECT MAX(cdk_id) FROM `xdw_cdk` GROUP BY cdk_code));
+        
+
+```
+
+## 使用unix时间戳入库
+
+```sql
+from_unixtime(Unix timestamp)
+```
+

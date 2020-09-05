@@ -106,3 +106,7 @@ public class WebConfigurer implements WebMvcConfigurer {
 ## 拦截器会执行两次
 
 如果将拦截器的拦截路径配置为"/*"，访问路径是""的话，拦截器会重复执行两次，第一次不会进入chain.doFilter(request, response);，而访问路径是其他执行一次，拦截器路径配置为"/**"也是一次，原因不清楚
+
+## 过滤器执行两次
+
+过滤器在执行时会出现执行两次的情况，原因是重复注册，在过滤器类上使用了@Component的同时，MainApplication添加了包扫描@ServletComponentScan("com.hozuo.xdw.common.filter")，@WebFilter(filterName = "corsFilter", urlPatterns = {"/*"})，二者只能选择其一。

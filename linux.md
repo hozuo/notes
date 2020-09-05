@@ -10,3 +10,9 @@ cat b.txt>a.txt
 find . -name '*log*' | xargs rm -f
 ```
 
+### 查看oom日志
+
+```
+egrep -i -r 'killed process' /var/log
+```
+
