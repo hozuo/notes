@@ -311,6 +311,12 @@ docker ps -a
 docker container prune
 ```
 
+```
+docker rmi `docker images | grep nameHaveThisWord | awk '{print $3}'` 
+```
+
+
+
 ## jar设置时区
 
 java -jar -Duser.timezone=GMT+08 /usr/local/src/xdw-0.0.1-SNAPSHOT.jar
@@ -581,4 +587,14 @@ groupadd: group 'docker' already exists
 Adding user hozuo to group docker
 [hozuo@localhost ~]$ newgrp docker #更新用户组
 ```
+
+## 错误Job for docker.service failed because start of the service was attempted too often
+
+```
+[root@localhost docker]# mv daemon.json daemon.conf
+[root@localhost docker]# systemctl restart docker
+[root@localhost docker]# docker version
+```
+
+原因可能是**/etc/docker/daemon.json**的格式不正确，修改格式或者直接修改后缀，删除该文件都可
 

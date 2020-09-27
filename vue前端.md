@@ -11,6 +11,12 @@
    this.editOutboundForm = JSON.parse(temp)
 ```
 
+```
+JSON.parse(JSON.stringify(var))
+```
+
+
+
 ## 计算属性
 
 ```
@@ -232,3 +238,33 @@ display="";
 ## 浏览器查看源码
 
 打开config下index.js文件，找到 productionSourceMap: true ，改为 false 即可隐藏源码。
+
+## Delete传数组
+
+```
+import Qs from 'qs'
+Vue.prototype.$qs = Qs
+
+const res = await _this.$http({
+    url: '/sn',
+    method: 'delete',
+    params: { 'id': [1, 2, 3] },
+    paramsSerializer: params => {
+    	return this.$qs.stringify(params, { indices: false })
+    }
+})
+```
+
+添加序列化器
+
+```
+const res = await _this.$http({
+    url: '/sn',
+    method: 'delete',
+    params: { 'list': list },
+    paramsSerializer: params => {
+    	return this.$qs.stringify(params, { indices: false })
+    }
+})
+```
+
